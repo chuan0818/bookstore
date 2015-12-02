@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xmlns:aop="http://www.springframework.org/schema/aop"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd  
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd  
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">  
+	
+	<!-- chuan 配置这个bean propertyConfigurer用于获取 properties文件中的属性值-->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<description>
+			这里配置需要的资源文件。
+			configure.properties配置了项目需要的参数。
+		</description>
+		<property name="locations">
+			<list>
+				<value>classpath:configure.properties</value>
+				<!--  <value>classpath:config_fj.properties</value>	 -->
+			</list>
+		</property>
+	</bean>
+	
+	<!--
+	 定义数据源的信息 C3P0是一个开放源代码的JDBC连接池，
+	它在lib目录中与Hibernate一起发布,包括了实现jdbc3和jdbc2扩展规范说明的Connection 和Statement 池的DataSources 对象
+	<bean id="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+
+		<property name="driverClass">
+			<value>${jdbc.driverClass}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${jdbc.jdbcUrl}</value>
+		</property>
+		<property name="user"> 这里属性是user不能写username  不同的数据源略有差别 
+			<value>${jdbc.username}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc.password}</value>
+		</property>
+
+		连接池中保留的最小连接数。
+		<property name="minPoolSize" value="10" />
+
+		连接池中保留的最大连接数。Default: 15 
+		<property name="maxPoolSize" value="100" />
+
+		<property name="initialPoolSize" value="10" />
+		最大空闲时间,1800秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 
+		<property name="maxIdleTime" value="1800" />
+		
+		 chuan 下面可以省略 
+	   当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 
+		<property name="acquireIncrement" value="3" />
+		
+		<property name="maxStatements" value="1000" />
+		
+
+		每60秒检查所有连接池中的空闲连接。Default: 0 
+		<property name="idleConnectionTestPeriod" value="60" />
+
+		定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 
+		<property name="acquireRetryAttempts" value="30" />
+		<property name="breakAfterAcquireFailure" value="true" />
+		<property name="testConnectionOnCheckout" value="false" />
+	</bean>
+	--> 
+	<!-- 定义数据源的信息 dbcp数据源    mysql数据库 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
+        <property name="driverClassName"><!-- 这里属性是driverClassName不能写driverClass  不同的数据源略有差别 -->
+			<value>${driverClassName}</value>
+		</property>
+		<property name="url"><!-- 这里属性是url不能写jdbcUrl  不同的数据源略有差别 -->
+			<value>${jdbc_url}</value>
+		</property>
+		<property name="username"><!-- 这里属性是username不能写user  不同的数据源略有差别 -->
+		<value>${jdbc_username}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc_password}</value>
+		</property>
+    </bean>  
+      
+	
+	
+	
+	
+	<!--定义Hibernate的SessionFactory -->
+	<!-- SessionFactory使用的数据源为上面的数据源 -->
+	<!-- 指定了Hibernate的映射文件和配置信息 -->
+	<!-- 这里的hibernate3/4跟jar包有关 org.springframework.orm.hibernate3.LocalSessionFactoryBean -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<!-- cvc-complex-type.3.2.2: Attribute 'local' is not allowed to appear in element 'ref'. -->
+			<!--  <ref local="dataSource" />-->
+			<ref bean="dataSource" />
+		</property>
+		
+		<!-- 映射 实体关系映射文件(类-表映射 主键映射 字段映射) 有两种方法mappingLocations 和 mappingResources-->
+		
+		<property name="mappingLocations">  
+		    <list>
+		        <!--
+		        <value>/WEB-INF/hbms/softPhone/*.hbm.xml</value>
+		        <value>/WEB-INF/hbms/CBB/workflow/*.hbm.xml</value>
+		    	-->
+		    	<value>/WEB-INF/hbms/*.hbm.xml</value>
+		    </list>
+		</property>
+		
+		<property name="mappingResources"><!-- 包中的实体关系映射文件 -->
+			<list>
+				<value>com/ssh/zzc/model/User.hbm.xml</value>
+				<!--<value>com/zzc/ssh/beans/User.hbm.xml</value>-->
+			</list>
+		</property>
+		
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="show_sql">true</prop>
+				<prop key="format_sql">true</prop>
+				<!--<prop key="hibernate.jdbc.batch_size">20</prop>-->
+			</props>
+		</property>
+	</bean>
+
+
+</beans>	
