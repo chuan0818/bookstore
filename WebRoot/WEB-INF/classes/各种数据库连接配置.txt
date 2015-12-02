@@ -1,0 +1,15 @@
+<!-- oracle 连接配置 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
+        <property name="driverClassName"><!-- 这里属性是driverClassName不能写driverClass  不同的数据源略有差别 -->
+			<value>${jdbc_driverClassName}</value>
+		</property>
+		<property name="url"><!-- 这里属性是url不能写jdbcUrl  不同的数据源略有差别 -->
+			<value>${jdbc_url}</value>
+		</property>
+		<property name="username"><!-- 这里属性是username不能写user  不同的数据源略有差别 -->
+		<value>${jdbc.username}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc.password}</value>
+		</property>
+    </bean>  
